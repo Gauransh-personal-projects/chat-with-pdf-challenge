@@ -26,6 +26,7 @@ async function ChatToFilePage({
       {/* Right */}
       <div className="col-span-5 lg:cold-span-2 overflow-y-auto">
         {/* Chat */}
+        <Chat />
       </div>
 
       {/* Left */}
