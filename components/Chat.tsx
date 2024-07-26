@@ -112,12 +112,22 @@ function Chat({ id }: { id: string }) {
   return (
     <div className="flex flex-col h-full overflow-scroll">
       {/* Chat contents */}
-      <div className="flex-1 w-full">{/* chat messages ... */}
-        {messages.map(message => (
-          <div key={message.id}>
-            <p>{message.message}</p>
+      <div className="flex-1 w-full">
+        {/* chat messages ... */}
+
+        {loading ? (
+          <div className="flex items-center justify-center">
+            <Loader2Icon className="animate-spin h-20 w-20 text-indigo-600 mt-20" />
           </div>
-        ))}
+        ) : (
+          <div>
+            {messages.map((message) => (
+              <div key={message.id}>
+                <p>{message.message}</p>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <form
