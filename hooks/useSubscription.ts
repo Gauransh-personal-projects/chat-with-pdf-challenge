@@ -16,7 +16,7 @@ function useSubscription() {
 
   //listen to the user document
   const [snapshot, loading, error] = useDocument(
-    user && doc(db, "user", user.id, "files"),
+    user && doc(db, "users", user.id),
     {
       snapshotListenOptions: { includeMetadataChanges: true },
     }
@@ -51,7 +51,6 @@ function useSubscription() {
 
     setIsOverFileLimit(files.length >= usersLimit);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fileSnapshot, hasActiveMembership, PRO_LIMIT, FREE_LIMIT]);
 
   return { hasActiveMembership, isOverFileLimit, loading, filesLoading, error };
