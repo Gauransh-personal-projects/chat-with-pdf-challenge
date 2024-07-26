@@ -6,7 +6,7 @@ import Stripe from "stripe";
 
 export async function POST(req: NextRequest) {
   const headersList = headers();
-  const body = await req.text();
+  const body = await req.text();  //important: must be req.text() not req.json()
   const signature = headersList.get("stripe-signature");
 
   if (!signature) {
