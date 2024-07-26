@@ -17,6 +17,8 @@ import { useUser } from "@clerk/nextjs";
 import { collection, orderBy, query } from "firebase/firestore";
 import { db } from "@/firebase";
 import { askQuestion } from "@/actions/askQuestion";
+import ChatMessage from "./ChatMessage";
+
 
 export type Message = {
   id?: string;
@@ -30,6 +32,7 @@ function Chat({ id }: { id: string }) {
   const [input, setInput] = useState("");
   const [isPending, startTransition] = useTransition();
   const [messages, setMessages] = useState<Message[]>([]);
+  const bottomRef = useRef<HTMLDivElement>(null);
 
   const [snapshot, loading, error] = useCollection(
     user &&
@@ -38,6 +41,12 @@ function Chat({ id }: { id: string }) {
         orderBy("createdAt", "asc")
       )
   );
+
+  useEffect(() => {
+    if (bottomRef.current) {
+      bottomRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
 
   useEffect(() => {
     if (!snapshot) return;
@@ -120,12 +129,23 @@ function Chat({ id }: { id: string }) {
             <Loader2Icon className="animate-spin h-20 w-20 text-indigo-600 mt-20" />
           </div>
         ) : (
-          <div>
-            {messages.map((message) => (
-              <div key={message.id}>
-                <p>{message.message}</p>
-              </div>
+          <div className="p-5">
+            {messages.length === 0 && (
+              <ChatMessage
+                key={"placeholder"}
+                message={{
+                  role: "ai",
+                  message: "Ask me anything...",
+                  createdAt: new Date(),
+                }}
+                />
+            )}
+
+            {messages.map((message, index) => (
+              <ChatMessage key={index} message={message} />
             ))}
+
+            <div ref={bottomRef} />
           </div>
         )}
       </div>
