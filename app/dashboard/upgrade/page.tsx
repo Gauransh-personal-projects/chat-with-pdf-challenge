@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { Button } from "@/components/ui/button";
 import { useUser } from "@clerk/nextjs";
@@ -6,8 +6,8 @@ import { CheckIcon } from "lucide-react";
 import { useRouter } from "next/router";
 
 function PricingPage() {
-    const {user} = useUser();
-    const router = useRouter();
+  const { user } = useUser();
+  const router = useRouter();
 
   return (
     <div>
@@ -108,14 +108,12 @@ function PricingPage() {
               <li className="flex gap-x-3">
                 <CheckIcon className="h-6 w-5 text-indigo-600" />
                 <span className="text-gray-600">
-                    Full Power AI Chat Functionality with Memory Recall
+                  Full Power AI Chat Functionality with Memory Recall
                 </span>
               </li>
               <li className="flex gap-x-3">
                 <CheckIcon className="h-6 w-5 text-indigo-600" />
-                <span className="text-gray-600">
-                  Advanced analytics
-                </span>
+                <span className="text-gray-600">Advanced analytics</span>
               </li>
               <li className="flex gap-x-3">
                 <CheckIcon className="h-6 w-5 text-indigo-600" />
