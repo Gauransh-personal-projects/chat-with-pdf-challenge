@@ -1,15 +1,22 @@
 "use client";
 
-import { FormEvent, use, useEffect, useRef, useState, useTransition } from "react";
+import {
+  FormEvent,
+  use,
+  useEffect,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-// import { askQuestion } from "@/actions/askQuestion";
 import { Loader2Icon } from "lucide-react";
-// import ChatMeessage from "./ChatMessage";
+// import ChatMesssage from "./ChatMessage";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { useUser } from "@clerk/nextjs";
 import { collection, orderBy, query } from "firebase/firestore";
 import { db } from "@/firebase";
+import { askQuestion } from "@/actions/askQuestion";
 
 export type Message = {
   id?: string;
@@ -38,12 +45,32 @@ function Chat({ id }: { id: string }) {
     console.log("Updated snapshot", snapshot.docs);
 
     // get second last message to check if AI is thinking
-    // const lastMessage = messages.pop()
+    const lastMessage = messages.pop();
+
+    if (lastMessage?.role === "ai" && lastMessage.message === "Thinking...") {
+      // return as this is a placeholder message
+      return;
+    }
+
+    const newMessages = snapshot.docs.map((doc) => {
+      const { role, message, createdAt } = doc.data();
+
+      return {
+        id: doc.id,
+        role,
+        message,
+        createdAt: createdAt.toDate(),
+      };
+    });
+
+    setMessages(newMessages);
+
+    // Ignore messages dependency warning here... we don't want an infinite loop
   }, [snapshot]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    
+
     const q = input;
 
     setInput("");
@@ -62,12 +89,36 @@ function Chat({ id }: { id: string }) {
         createdAt: new Date(),
       },
     ]);
+
+    startTransition(async () => {
+      const { success, message } = await askQuestion(id, q);
+
+      if (!success) {
+        // toast ..
+
+        setMessages((prev) =>
+          prev.slice(0, prev.length - 1).concat([
+            {
+              role: "ai",
+              message: `Whoops... ${message}`,
+              createdAt: new Date(),
+            },
+          ])
+        );
+      }
+    });
   };
 
   return (
     <div className="flex flex-col h-full overflow-scroll">
       {/* Chat contents */}
-      <div className="flex-1 w-full">{/* chat messages ... */}</div>
+      <div className="flex-1 w-full">{/* chat messages ... */}
+        {messages.map(message => (
+          <div key={message.id}>
+            <p>{message.message}</p>
+          </div>
+        ))}
+      </div>
 
       <form
         onSubmit={handleSubmit}
@@ -90,4 +141,5 @@ function Chat({ id }: { id: string }) {
     </div>
   );
 }
+
 export default Chat;
