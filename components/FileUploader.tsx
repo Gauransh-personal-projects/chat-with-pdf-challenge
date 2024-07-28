@@ -10,9 +10,12 @@ import {
 } from "lucide-react";
 import useUpload, { StatusText } from "@/hooks/useUpload";
 import { useRouter } from "next/navigation";
+import useSubscription from "@/hooks/useSubscription";
+import { toast } from "./ui/use-toast";
 
 function FileUploader() {
   const { progress, status, fileId, handleUpload } = useUpload();
+  const { isOverFileLimit, filesLoading } = useSubscription();
   const router = useRouter();
 
   useEffect(() => {
@@ -28,13 +31,21 @@ function FileUploader() {
 
       const file = acceptedFiles[0];
       if (file) {
-        await handleUpload(file);
+        if (!isOverFileLimit && !filesLoading) {
+          await handleUpload(file);
+        } else{
+          toast({
+            variant: "destructive",
+            title: "Free Plan File Limit Reached",
+            description: "You have reached the maximum number of files allowed for your account. Please upgrade to add more documents",
+          });
+        }
       } else {
         // do nothing ...
         // toast
       }
     },
-    [handleUpload]
+    [handleUpload, isOverFileLimit, filesLoading]
   );
 
   const statusIcons: {

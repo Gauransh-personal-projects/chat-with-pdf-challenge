@@ -34,7 +34,8 @@ function useSubscription() {
     const data = snapshot.data();
     if (!data) return;
 
-    setHasActiveMembership(data.activeMembership);
+    console.log("DEBUG1", data);
+    setHasActiveMembership(data.hasActiveMembership);
   }, [snapshot]);
 
   useEffect(() => {
@@ -50,7 +51,6 @@ function useSubscription() {
     );
 
     setIsOverFileLimit(files.length >= usersLimit);
-
   }, [fileSnapshot, hasActiveMembership, PRO_LIMIT, FREE_LIMIT]);
 
   return { hasActiveMembership, isOverFileLimit, loading, filesLoading, error };
